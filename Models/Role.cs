@@ -1,17 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SimpleApiProject.Models
+namespace SimpleApiProject.Models;
+
+// Represents a Role entity, like Admin, User, etc.
+public class Role
 {
-    public class Role
-    {
-        [Key]
-        public Guid Id { get; set; }
+    [Key] // Primary key for Role
+    public Guid Id { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string Name { get; set; } // e.g., "Admin", "User"
+    [Required] // Name is mandatory
+    [MaxLength(50)] // Max length constraint for Role name
+    public string Name { get; set; }
 
-        // Navigation property - Many users can have this role
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
-    }
+    // Navigation property for many-to-many relationship with Users
+    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }

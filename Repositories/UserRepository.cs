@@ -1,8 +1,4 @@
-﻿
-namespace SimpleApiProject.Repositories
+﻿namespace SimpleApiProject.Repositories;
+public class UserRepository : IUserRepository
 {
-    // Implementation of IUserRepository
-    public class UserRepository : IUserRepository
-    {
-    }
 }

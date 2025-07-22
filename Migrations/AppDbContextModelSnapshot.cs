@@ -8,171 +8,170 @@ using SimpleApiProject.Data;
 
 #nullable disable
 
-namespace SimpleApiProject.Migrations
+namespace SimpleApiProject.Migrations;
+
+[DbContext(typeof(AppDbContext))]
+partial class AppDbContextModelSnapshot : ModelSnapshot
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    protected override void BuildModel(ModelBuilder modelBuilder)
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "9.0.7")
+            .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+        NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SimpleApiProject.Models.Claim", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+        modelBuilder.Entity("SimpleApiProject.Models.Claim", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("Type")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                b.Property<string>("Value")
+                    .IsRequired()
+                    .HasMaxLength(200)
+                    .HasColumnType("character varying(200)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Claims");
-                });
+                b.ToTable("Claims");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.Role", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+        modelBuilder.Entity("SimpleApiProject.Models.Role", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("character varying(50)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Roles");
-                });
+                b.ToTable("Roles");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+        modelBuilder.Entity("SimpleApiProject.Models.User", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                b.Property<DateTime>("CreatedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                b.Property<string>("Email")
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("character varying(100)");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                b.Property<string>("PasswordHash")
+                    .IsRequired()
+                    .HasMaxLength(256)
+                    .HasColumnType("character varying(256)");
 
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                b.Property<string>("UserName")
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .HasColumnType("character varying(50)");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("Users");
-                });
+                b.ToTable("Users");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.UserClaim", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+        modelBuilder.Entity("SimpleApiProject.Models.UserClaim", b =>
+            {
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("ClaimId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("ClaimId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "ClaimId");
+                b.HasKey("UserId", "ClaimId");
 
-                    b.HasIndex("ClaimId");
+                b.HasIndex("ClaimId");
 
-                    b.ToTable("UserClaims");
-                });
+                b.ToTable("UserClaims");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.UserRole", b =>
-                {
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+        modelBuilder.Entity("SimpleApiProject.Models.UserRole", b =>
+            {
+                b.Property<Guid>("UserId")
+                    .HasColumnType("uuid");
 
-                    b.Property<Guid>("RoleId")
-                        .HasColumnType("uuid");
+                b.Property<Guid>("RoleId")
+                    .HasColumnType("uuid");
 
-                    b.HasKey("UserId", "RoleId");
+                b.HasKey("UserId", "RoleId");
 
-                    b.HasIndex("RoleId");
+                b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles");
-                });
+                b.ToTable("UserRoles");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.UserClaim", b =>
-                {
-                    b.HasOne("SimpleApiProject.Models.Claim", "Claim")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("ClaimId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("SimpleApiProject.Models.UserClaim", b =>
+            {
+                b.HasOne("SimpleApiProject.Models.Claim", "Claim")
+                    .WithMany("UserClaims")
+                    .HasForeignKey("ClaimId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("SimpleApiProject.Models.User", "User")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("SimpleApiProject.Models.User", "User")
+                    .WithMany("UserClaims")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Claim");
+                b.Navigation("Claim");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.UserRole", b =>
-                {
-                    b.HasOne("SimpleApiProject.Models.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+        modelBuilder.Entity("SimpleApiProject.Models.UserRole", b =>
+            {
+                b.HasOne("SimpleApiProject.Models.Role", "Role")
+                    .WithMany("UserRoles")
+                    .HasForeignKey("RoleId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.HasOne("SimpleApiProject.Models.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                b.HasOne("SimpleApiProject.Models.User", "User")
+                    .WithMany("UserRoles")
+                    .HasForeignKey("UserId")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
 
-                    b.Navigation("Role");
+                b.Navigation("Role");
 
-                    b.Navigation("User");
-                });
+                b.Navigation("User");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.Claim", b =>
-                {
-                    b.Navigation("UserClaims");
-                });
+        modelBuilder.Entity("SimpleApiProject.Models.Claim", b =>
+            {
+                b.Navigation("UserClaims");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.Role", b =>
-                {
-                    b.Navigation("UserRoles");
-                });
+        modelBuilder.Entity("SimpleApiProject.Models.Role", b =>
+            {
+                b.Navigation("UserRoles");
+            });
 
-            modelBuilder.Entity("SimpleApiProject.Models.User", b =>
-                {
-                    b.Navigation("UserClaims");
+        modelBuilder.Entity("SimpleApiProject.Models.User", b =>
+            {
+                b.Navigation("UserClaims");
 
-                    b.Navigation("UserRoles");
-                });
+                b.Navigation("UserRoles");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

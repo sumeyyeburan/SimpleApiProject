@@ -1,7 +1,8 @@
-﻿namespace SimpleApiProject.Services
+﻿namespace SimpleApiProject.Services;
+public interface IUserService
 {
-    // Interface for user-related business logic
-    public interface IUserService
-    {
-    }
 }
+
+
+
+
