@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace SimpleApiProject.Models;
-public class Claim
+public class Claim : BaseEntity
 {
-    [Key]
-    public Guid Id { get; set; }
+    //[Key]
+    //public Guid Id { get; set; }
 
     [Required]
     [MaxLength(100)]

@@ -1,6 +1,6 @@
 ﻿namespace SimpleApiProject.Models;
 // Junction table for many-to-many relationship between User and Role
-public class UserRole
+public class UserRole:BaseEntity
 {
     public Guid UserId { get; set; }
     public User User { get; set; }

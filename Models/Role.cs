@@ -3,10 +3,10 @@
 namespace SimpleApiProject.Models;
 
 // Represents a Role entity, like Admin, User, etc.
-public class Role
+public class Role : BaseEntity
 {
-    [Key] // Primary key for Role
-    public Guid Id { get; set; }
+    //[Key] // Primary key for Role
+    //public Guid Id { get; set; }
 
     [Required] // Name is mandatory
     [MaxLength(50)] // Max length constraint for Role name
