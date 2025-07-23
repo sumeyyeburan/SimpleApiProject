@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SimpleApiProject.Data;
@@ -11,9 +12,11 @@ using SimpleApiProject.Data;
 namespace SimpleApiProject.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250723104341_RemoveLoginRequestTable")]
+    partial class RemoveLoginRequestTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +58,7 @@ namespace SimpleApiProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Claims", (string)null);
+                    b.ToTable("Claims");
                 });
 
             modelBuilder.Entity("SimpleApiProject.Models.Role", b =>
@@ -86,7 +89,7 @@ namespace SimpleApiProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles", (string)null);
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("SimpleApiProject.Models.User", b =>
@@ -127,7 +130,7 @@ namespace SimpleApiProject.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("SimpleApiProject.Models.UserClaim", b =>
@@ -160,7 +163,7 @@ namespace SimpleApiProject.Migrations
 
                     b.HasIndex("ClaimId");
 
-                    b.ToTable("UserClaims", (string)null);
+                    b.ToTable("UserClaims");
                 });
 
             modelBuilder.Entity("SimpleApiProject.Models.UserRole", b =>
@@ -193,7 +196,7 @@ namespace SimpleApiProject.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("SimpleApiProject.Models.UserClaim", b =>

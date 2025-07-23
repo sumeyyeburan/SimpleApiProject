@@ -20,6 +20,12 @@ public class BaseEntity
     // Timestamp when the entity was last updated, defaults to current UTC time
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    public enum EntityStatus
+    {
+        Deleted = -1,
+        Passive = 0,
+        Active = 1
+    }
     // Status field to indicate entity state (e.g. active, deleted, etc.)
-    public int Status { get; set; }
+    public EntityStatus Status { get; set; }
 }

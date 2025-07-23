@@ -1,11 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleApiProject.Data;
+using SimpleApiProject.DTOs;
 using SimpleApiProject.Models;
 using SimpleApiProject.Services;
 using System.Collections.Generic;
-using SimpleApiProject.DTOs;
 
 namespace SimpleApiProject.Controllers;
 
@@ -23,13 +24,17 @@ public class AuthController : ControllerBase
         _context = context;
     }
 
-    // POST: api/auth/login
+    /// <summary>
+    /// Logs in a user and returns a JWT token.
+    /// </summary>
+    /// <param name="LoginDto">Email and password credentials</param>
+    /// <returns>JWT token</returns>
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] DTOs.LoginDto LoginDto)
     {
         // Check for missing credentials
         if (string.IsNullOrEmpty(LoginDto.Email) || string.IsNullOrEmpty(LoginDto.Password))
-            return Unauthorized("Kullanıcı adı veya şifre boş olamaz");
+            return Unauthorized("Username or password cannot be empty.");
 
         // Retrieve user from database including related roles
         var user = await _context.Users
@@ -39,7 +44,7 @@ public class AuthController : ControllerBase
 
         // If user not found or password is incorrect, deny access
         if (user == null || !BCrypt.Net.BCrypt.Verify(LoginDto.Password, user.PasswordHash))
-            return Unauthorized("Email veya şifre hatalı");
+            return Unauthorized("Incorrect email or password.");
 
         // Convert user's roles to a list of role names
         var roles = user.UserRoles.Select(ur => ur.Role.Name).ToList();
@@ -51,6 +56,11 @@ public class AuthController : ControllerBase
         return Ok(new { Token = token });
     }
 
+    /// <summary>
+    /// Registers a new user.
+    /// </summary>
+    /// <param name="RegisterDto">Email, password and username information</param>
+    /// <returns>Registration result message</returns>
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto RegisterDto)
     {

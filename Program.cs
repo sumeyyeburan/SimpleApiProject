@@ -5,7 +5,8 @@ using SimpleApiProject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,7 +48,46 @@ builder.Services.AddControllers();
 
 // Register Swagger/OpenAPI services for API documentation
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SimpleApiProject",
+        Version = "v1",
+        Description = "API documentation with JWT-secured login"
+    });
+
+    // JWT configuration for Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Please enter JWT token in the format 'Bearer {token}'."
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+
+    // Include XML documentation comments into Swagger
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
 
 var app = builder.Build();
 
@@ -77,11 +117,11 @@ using (var scope = app.Services.CreateScope())
     try
     {
         db.Database.CanConnect();
-        Console.WriteLine(" PostgreSQL baðlantýsý baþarýlý!");
+        Console.WriteLine(" PostgreSQL connection successful!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($" Veritabaný baðlantý hatasý: {ex.Message}");
+        Console.WriteLine($" Database connection error: {ex.Message}");
     }
 }
 

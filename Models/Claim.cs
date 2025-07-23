@@ -3,9 +3,6 @@
 namespace SimpleApiProject.Models;
 public class Claim : BaseEntity
 {
-    //[Key]
-    //public Guid Id { get; set; }
-
     [Required]
     [MaxLength(100)]
     public string Type { get; set; } // e.g., "Permission"
