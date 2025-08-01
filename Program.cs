@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SimpleApiProject.Data;
 using SimpleApiProject.Repositories;
 using SimpleApiProject.Services;
@@ -10,19 +10,25 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Read the connection string from appsettings.json
+// Configure HTTP listener on port 5246
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(5246); 
+});
+
+// Get the database connection string from config
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Register DbContext with PostgreSQL provider
+// Register DbContext with PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Register repositories and services for dependency injection
+// Register repository and services
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<JwtTokenService>();
 
-// Configure JWT Authentication settings
+// Configure JWT authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,32 +39,30 @@ builder.Services.AddAuthentication(options =>
     var config = builder.Configuration;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,  // Validate the JWT issuer (who issued the token)
-        ValidateAudience = true, // Validate the intended audience of the token
-        ValidateLifetime = true, // Validate token expiration
-        ValidateIssuerSigningKey = true, // Validate the signing key used to sign the token
-        ValidIssuer = config["Jwt:Issuer"],  // Expected issuer value
-        ValidAudience = config["Jwt:Audience"],  // Expected audience value
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"])) // Security key for token validation
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = config["Jwt:Issuer"],
+        ValidAudience = config["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
     };
 });
 
-// Add controllers support for API endpoints
-builder.Services.AddControllers();
-
-// Register Swagger/OpenAPI services for API documentation
+// Add Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
 
+// Swagger configuration with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "SimpleApiProject",
         Version = "v1",
-        Description = "API documentation with JWT-secured login"
+        Description = "JWT Authentication enabled API"
     });
 
-    // JWT configuration for Swagger
+    // Add JWT Bearer token support to Swagger U
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -66,9 +70,10 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Please enter JWT token in the format 'Bearer {token}'."
+        Description = "Enter 'Bearer {token}'"
     });
 
+    // Add global security requirement
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
@@ -84,25 +89,45 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 
-    // Include XML documentation comments into Swagger
+    // Include XML comments (for Swagger UI doc)
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
+// Configure CORS for Android emulator
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowEmulator", policy =>
+    {
+        policy.WithOrigins("http://10.0.2.2")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Register controllers
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
-// Enable Swagger UI in development environment only
+// Enable Swagger in development
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Redirect HTTP requests to HTTPS for security
-app.UseHttpsRedirection();
+// Force HTTPS only in production
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Enable authentication middleware
 app.UseAuthentication();
+
+// Enable CORS policy
+app.UseCors("AllowEmulator");
 
 // Enable authorization middleware
 app.UseAuthorization();
@@ -110,19 +135,20 @@ app.UseAuthorization();
 // Map controller endpoints
 app.MapControllers();
 
-// Test database connection on application startup
+// Test database connection on startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
         db.Database.CanConnect();
-        Console.WriteLine(" PostgreSQL connection successful!");
+        Console.WriteLine("PostgreSQL connection successful!");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($" Database connection error: {ex.Message}");
+        Console.WriteLine($"Database connection error: {ex.Message}");
     }
 }
 
+// Run the application
 app.Run();

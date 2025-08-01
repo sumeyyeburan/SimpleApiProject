@@ -32,6 +32,16 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] DTOs.LoginDto LoginDto)
     {
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            return BadRequest(new { errors });
+        }
+
         // Check for missing credentials
         if (string.IsNullOrEmpty(LoginDto.Email) || string.IsNullOrEmpty(LoginDto.Password))
             return Unauthorized("Username or password cannot be empty.");
@@ -40,7 +50,7 @@ public class AuthController : ControllerBase
         var user = await _context.Users
             .Include(u => u.UserRoles)          // Include UserRoles relationship
             .ThenInclude(ur => ur.Role)         // Then include the Role linked to each UserRole
-            .FirstOrDefaultAsync(u => u.Email == LoginDto.Email); // Find user by email
+            .FirstOrDefaultAsync(u => u.Email == LoginDto.Email && u.Status == BaseEntity.EntityStatus.Active); // Find user by email
 
         // If user not found or password is incorrect, deny access
         if (user == null || !BCrypt.Net.BCrypt.Verify(LoginDto.Password, user.PasswordHash))
@@ -64,31 +74,44 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto RegisterDto)
     {
+        // Validate the incoming model
+        if (!ModelState.IsValid)
+        {
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            return BadRequest(new { errors });
+        }
+
+        // Basic input validation
         if (string.IsNullOrEmpty(RegisterDto.Email) || string.IsNullOrEmpty(RegisterDto.Password))
             return BadRequest("Email and password cannot be empty.");
 
         // Check if the user already exists
         var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == RegisterDto.Email);
         if (existingUser != null)
-            return BadRequest("This email is already registered.");
+            return BadRequest(new { message = "This email is already registered." });
 
-        // Hash the password
+
+        // Hash the password using BCrypt
         var hashedPassword = BCrypt.Net.BCrypt.HashPassword(RegisterDto.Password);
 
-        // Create a new user
+        // Create new user entity
         var newUser = new User
         {
             Id = Guid.NewGuid(),
-            Email = RegisterDto.Email,
+            Email = RegisterDto.Email.ToLower(),  // Normalize email
             PasswordHash = hashedPassword,
-
-            UserName = RegisterDto.UserName
+            UserName = RegisterDto.UserName,
+            Status = BaseEntity.EntityStatus.Active  // Set user as active
         };
 
         // Add the new user to the database
         _context.Users.Add(newUser);
 
-        // Assign a role to the new user (for example "User")
+        // Get or create the "User" role
         var userRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User");
         if (userRole == null)
         {
@@ -110,4 +133,5 @@ public class AuthController : ControllerBase
 
         return Ok("Registration successful.");
     }
+
 }

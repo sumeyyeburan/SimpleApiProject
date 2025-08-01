@@ -15,6 +15,7 @@ public class UserController : ControllerBase
     [Authorize(Roles = "Admin")]
     [HttpGet("admin")]
     public IActionResult AdminOnly()
+
     {
         return Ok("Only Admin users can access this endpoint.");
     }
