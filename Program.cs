@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure HTTP listener on port 5246
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ListenAnyIP(5246); 
+    options.ListenAnyIP(5246);
 });
 
 // Get the database connection string from config
@@ -97,11 +97,16 @@ builder.Services.AddSwaggerGen(c =>
 // Configure CORS for Android emulator
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowEmulator", policy =>
+    options.AddPolicy("AllowAll", policy =>
     {
-        policy.WithOrigins("http://10.0.2.2")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+            "http://localhost:5204", // Vite
+            "https://9f1320f7be5b.ngrok-free.app", // Ngrok üzerinden gelen istekler
+            "https://30bbd39d70e6.ngrok-free.app" // frontend ngrok
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+        //.AllowCredentials();
     });
 });
 
@@ -127,7 +132,8 @@ if (!app.Environment.IsDevelopment())
 app.UseAuthentication();
 
 // Enable CORS policy
-app.UseCors("AllowEmulator");
+//app.UseCors("AllowEmulator");
+app.UseCors("AllowAll");
 
 // Enable authorization middleware
 app.UseAuthorization();
