@@ -5,6 +5,7 @@ namespace SimpleApiProject.DTOs;
 public class RegisterDto
 {
     [Required(ErrorMessage = "Username is required.")]
+    [StringLength(30, MinimumLength = 3, ErrorMessage = "Username must be at least 3 characters.")]
     public string UserName { get; set; }
 
     [Required(ErrorMessage = "Email is required.")]

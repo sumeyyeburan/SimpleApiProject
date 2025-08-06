@@ -101,12 +101,11 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:5204", // Vite
-            "https://9f1320f7be5b.ngrok-free.app", // Ngrok üzerinden gelen istekler
-            "https://30bbd39d70e6.ngrok-free.app" // frontend ngrok
+            "https://9f1320f7be5b.ngrok-free.app", // Requests coming through Ngrok
+            "https://30bbd39d70e6.ngrok-free.app" // frontend Ngrok
         )
         .AllowAnyHeader()
         .AllowAnyMethod();
-        //.AllowCredentials();
     });
 });
 
