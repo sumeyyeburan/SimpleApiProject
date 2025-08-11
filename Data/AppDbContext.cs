@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<Claim> Claims { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<UserClaim> UserClaims { get; set; }
+    public DbSet<QrCode> QrCodes { get; set; }
 
     // Configure relationships and keys using Fluent API
     protected override void OnModelCreating(ModelBuilder modelBuilder)

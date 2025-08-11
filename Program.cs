@@ -101,8 +101,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:5204", // Vite
-            "https://9f1320f7be5b.ngrok-free.app", // Requests coming through Ngrok
-            "https://30bbd39d70e6.ngrok-free.app" // frontend Ngrok
+            "https://00ae62502df0.ngrok-free.app", // Requests coming through Ngrok
+            "https://a7e3e7907b48.ngrok-free.app" // frontend Ngrok
         )
         .AllowAnyHeader()
         .AllowAnyMethod();
@@ -111,6 +111,8 @@ builder.Services.AddCors(options =>
 
 // Register controllers
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<QrService>();
 
 var app = builder.Build();
 

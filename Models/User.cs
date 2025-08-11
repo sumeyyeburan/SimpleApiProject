@@ -19,4 +19,7 @@ public class User : BaseEntity
 
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public ICollection<UserClaim> UserClaims { get; set; } = new List<UserClaim>();
+
+    // QR Kodlarla ilişki (1 kullanıcı, n QR kod)
+    public ICollection<QrCode> QrCodes { get; set; } = new List<QrCode>();
 }
