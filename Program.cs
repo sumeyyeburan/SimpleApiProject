@@ -101,8 +101,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:5204", // Vite
-            "https://00ae62502df0.ngrok-free.app", // Requests coming through Ngrok
-            "https://a7e3e7907b48.ngrok-free.app" // frontend Ngrok
+            "https://2e48bb3a6f53.ngrok-free.app", // Requests coming through Ngrok
+            "https://69bc4e119ac5.ngrok-free.app" // frontend Ngrok
         )
         .AllowAnyHeader()
         .AllowAnyMethod();

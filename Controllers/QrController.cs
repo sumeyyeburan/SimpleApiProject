@@ -16,7 +16,7 @@ namespace SimpleApiProject.Controllers
         private readonly QrService _qrService;
         private readonly AppDbContext _context;
 
-        // Hem QrService hem AppDbContext injection'ı yapılmalı
+        // Both QrService and AppDbContext should be injected
         public QrController(QrService qrService, AppDbContext context)
         {
             _qrService = qrService;
@@ -51,15 +51,15 @@ namespace SimpleApiProject.Controllers
             var qrCode = await _context.QrCodes.FindAsync(id);
 
             if (qrCode == null)
-                return NotFound("QR kodu bulunamadı.");
+                return NotFound("QR code not found.");
 
             if (qrCode.ExpiresAt < DateTime.UtcNow)
-                return BadRequest("QR kodunun süresi dolmuş.");
+                return BadRequest("QR code has expired.");
 
             if (qrCode.Type == QRCodeType.one_time && qrCode.IsActive == false)
-                return BadRequest("Tek kullanımlık QR kodu geçersiz.");
+                return BadRequest("One-time QR code is invalid.");
 
-            //  Tek kullanımlıksa: Kullanıldı olarak işaretle
+            // If it's one-time: mark it as used
             if (qrCode.Type == QRCodeType.one_time)
             {
                 qrCode.IsActive = false;
@@ -69,7 +69,7 @@ namespace SimpleApiProject.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Eğer geçerliyse:
+            // If valid:
             return Ok(new
             {
                 qrCode.Id,
